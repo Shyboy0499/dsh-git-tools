@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { makeRepo, cleanup, write, commitAll, git } from './helpers'
 import { gitDiffTool } from '../src/tools/diff'
 
@@ -73,6 +75,64 @@ describe('git_diff', () => {
       write(dir, 'a.txt', 'one\ntwo\n')
       write(dir, 'b.txt', 'x\ny\n')
       const value = (await gitDiffTool.execute({ cwd: dir, path: 'b.txt' }, exec)) as any
+      expect(value.total.files).toBe(1)
+      expect(value.stat[0].file).toBe('b.txt')
+    } finally {
+      cleanup(dir)
+    }
+  })
+
+  it('maps binary files to zero counts', async () => {
+    const dir = makeRepo()
+    try {
+      writeFileSync(join(dir, 'b.bin'), Buffer.from([0, 1, 2, 255]))
+      commitAll(dir, 'initial')
+      writeFileSync(join(dir, 'b.bin'), Buffer.from([9, 9, 9]))
+      const value = (await gitDiffTool.execute({ cwd: dir }, exec)) as any
+      expect(value.total.files).toBe(1)
+      expect(value.stat[0]).toMatchObject({ file: 'b.bin', added: 0, deleted: 0 })
+    } finally {
+      cleanup(dir)
+    }
+  })
+
+  it('sums totals across multiple files', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'one\n')
+      write(dir, 'b.txt', 'x\n')
+      commitAll(dir, 'initial')
+      write(dir, 'a.txt', 'one\ntwo\n') // +1
+      write(dir, 'b.txt', 'x\ny\nz\n') // +2
+      const value = (await gitDiffTool.execute({ cwd: dir }, exec)) as any
+      expect(value.total.files).toBe(2)
+      expect(value.total.insertions).toBe(3)
+      expect(value.total.deletions).toBe(0)
+    } finally {
+      cleanup(dir)
+    }
+  })
+
+  it('returns an empty patch string (not null) for statOnly=false with no changes', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'hello\n')
+      commitAll(dir, 'initial')
+      const value = (await gitDiffTool.execute({ cwd: dir, statOnly: false }, exec)) as any
+      expect(value.patch).toBe('')
+    } finally {
+      cleanup(dir)
+    }
+  })
+
+  it('reports the new path for a staged rename', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'one\n')
+      commitAll(dir, 'initial')
+      git(dir, 'mv', 'a.txt', 'b.txt')
+      git(dir, 'add', '-A')
+      const value = (await gitDiffTool.execute({ cwd: dir, staged: true }, exec)) as any
       expect(value.total.files).toBe(1)
       expect(value.stat[0].file).toBe('b.txt')
     } finally {

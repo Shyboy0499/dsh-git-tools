@@ -25,7 +25,9 @@ function parseNumstat(stdout: string): { stat: DiffStat[]; total: GitDiffValue['
     files++
     const added = match[1] === '-' ? 0 : Number(match[1])
     const deleted = match[2] === '-' ? 0 : Number(match[2])
-    stat.push({ file: match[3], added, deleted })
+    // Rename entries appear as "old.txt => new.txt" in --cached diffs; report the new path.
+    const file = match[3].replace(/^.* => /, '')
+    stat.push({ file, added, deleted })
     insertions += added
     deletions += deleted
   }
