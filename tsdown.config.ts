@@ -10,7 +10,9 @@ const lib: UserConfig = {
   fixedExtension: false,
   dts: false,
   clean: false,
-  external: ['@deepseek-ai/cordis', '@deepseek-ai/dsh-tools', 'schemastery'],
+  deps: {
+    neverBundle: ['@deepseek-ai/cordis', '@deepseek-ai/dsh-tools'],
+  },
 }
 
 export default [lib]
