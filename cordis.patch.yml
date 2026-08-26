@@ -1,0 +1,4 @@
+# dsh-git-tools bundle registration.
+- insert:
+    - id: git-tools
+      name: dsh-git-tools

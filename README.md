@@ -53,7 +53,8 @@ View changes. `staged` diffs the index, `statOnly: true` (default) returns a sta
 List recent commits. `count` defaults to 10 (max 100); `path` filters to a file.
 
 ```json
-[{ "hash": "a1b2c3d", "author": "Shyboy0499", "date": "2026-08-26", "subject": "Fix typo" }]
+{ "commits": [{ "hash": "a1b2c3d4e5f67890abcdef1234567890abcdef12", "author": "Shyboy0499", "date": "2026-08-26", "subject": "Fix typo" }],
+  "total": 1 }
 ```
 
 ### `git_commit`
@@ -62,7 +63,7 @@ Create a commit. `message` is **required** (non-empty). Stage specific files wit
 or everything with `all: true`. Never stages implicitly.
 
 ```json
-{ "success": true, "hash": "e5f6g7h", "branch": "main", "filesStaged": 2 }
+{ "success": true, "hash": "e5f6g7h0123456789abcdef0123456789abcdef01", "branch": "main", "filesStaged": 2 }
 ```
 
 ## Safety
