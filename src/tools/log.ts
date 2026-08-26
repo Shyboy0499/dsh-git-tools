@@ -13,6 +13,10 @@ export interface GitLogValue {
   total: number
 }
 
+// Records are delimited by \x1e (unit-record sep) and fields by \x1f (unit sep) via git's
+// %x1e/%x1f pretty placeholders — robust against spaces, pipes, and other printable chars
+// in subjects and author names. A literal control byte in a commit message would break a
+// record, but that is effectively never in practice.
 function parseLog(stdout: string): LogEntry[] {
   const commits: LogEntry[] = []
   for (const record of stdout.split('\x1e')) {

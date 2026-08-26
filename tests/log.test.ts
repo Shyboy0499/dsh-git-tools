@@ -52,4 +52,22 @@ describe('git_log', () => {
       cleanup(dir)
     }
   })
+
+  it('clamps count to the [1,100] range', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'one\n')
+      commitAll(dir, 'first')
+      write(dir, 'a.txt', 'one\ntwo\n')
+      commitAll(dir, 'second')
+      const low = (await gitLogTool.execute({ cwd: dir, count: 0 }, exec)) as any
+      expect(low.commits.length).toBe(1)
+      const high = (await gitLogTool.execute({ cwd: dir, count: 1000 }, exec)) as any
+      expect(high.commits.length).toBe(2)
+      const frac = (await gitLogTool.execute({ cwd: dir, count: 2.9 }, exec)) as any
+      expect(frac.commits.length).toBe(2)
+    } finally {
+      cleanup(dir)
+    }
+  })
 })
