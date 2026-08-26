@@ -41,4 +41,17 @@ describe('git_status', () => {
       cleanup(dir)
     }
   })
+
+  it('reports a branch name containing dots correctly', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'hello\n')
+      commitAll(dir, 'initial')
+      git(dir, 'checkout', '-b', 'release/1.0')
+      const value = (await gitStatusTool.execute({ cwd: dir }, exec)) as any
+      expect(value.branch).toBe('release/1.0')
+    } finally {
+      cleanup(dir)
+    }
+  })
 })

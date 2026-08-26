@@ -26,8 +26,7 @@ function parseStatus(stdout: string): GitStatusValue {
       } else if (head.startsWith('HEAD (no branch)')) {
         value.branch = 'HEAD'
       } else {
-        const m = head.match(/^([^.\s]+)/)
-        value.branch = m ? m[1] : 'HEAD'
+        value.branch = head.split('...')[0].trim() || 'HEAD'
       }
       const ahead = head.match(/ahead (\d+)/)
       const behind = head.match(/behind (\d+)/)
