@@ -63,7 +63,7 @@ Create a commit. `message` is **required** (non-empty). Stage specific files wit
 or everything with `all: true`. Never stages implicitly.
 
 ```json
-{ "success": true, "hash": "e5f6g7h", "branch": "main", "filesStaged": 2 }
+{ "success": true, "hash": "e5f6g7h0123456789abcdef0123456789abcdef01", "branch": "main", "filesStaged": 2 }
 ```
 
 ## Safety

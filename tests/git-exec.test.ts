@@ -49,6 +49,10 @@ describe('gitExec', () => {
     }
   })
 
+  it('rejects with a clear error when cwd is not a directory', async () => {
+    await expect(gitExec('/nonexistent/dsh-git-tools-xyz', ['status'])).rejects.toThrow('not a directory')
+  })
+
   it('rejects with AbortError (not GitError) when the signal is already aborted', async () => {
     const dir = tempDir()
     const controller = new AbortController()

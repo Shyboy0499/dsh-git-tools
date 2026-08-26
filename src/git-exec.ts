@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process'
+import { statSync } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 import { promisify } from 'node:util'
 
@@ -25,6 +26,13 @@ export async function gitExec(
   args: string[],
   signal?: AbortSignal,
 ): Promise<GitExecResult> {
+  let isDir = false
+  try {
+    isDir = statSync(cwd).isDirectory()
+  } catch {
+    isDir = false
+  }
+  if (!isDir) throw new Error(`Working directory does not exist or is not a directory: ${cwd}`)
   try {
     const { stdout } = await execFileAsync(
       'git',

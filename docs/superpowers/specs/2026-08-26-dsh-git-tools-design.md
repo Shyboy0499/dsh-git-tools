@@ -81,15 +81,18 @@ gitExec(cwd: string, args: string[], opts?: { signal?: AbortSignal }): Promise<{
 
 ### `git_diff`
 - Params: `cwd?`, `staged?` (bool, default false), `path?`, `statOnly?` (bool, default true)
-- Commands: `git diff [--cached] [--stat] [-- <path>]`, full patch when `statOnly` is false
-- Returns: `{ stat: [{ file, added, deleted }], total: { files, insertions, deletions }, patch? }`
-- Parses `--stat` trailer; patch captured verbatim.
+- Commands: `git diff [--cached] --numstat [-- <path>]`; full patch when `statOnly` is false
+- Returns: `{ stat: [{ file, added, deleted }], total: { files, insertions, deletions }, patch }`
+  (`patch` is `null` in stat-only mode; binary files report `added`/`deleted` as 0; staged
+  renames report the new path).
+- Parses `--numstat` rows; patch captured verbatim.
 
 ### `git_log`
 - Params: `cwd?`, `count?` (default 10, max 100), `path?`
-- Command: `git log --pretty=format:"%h|%an|%ad|%s" --date=short -n <count> [-- <path>]`
-- Returns: `[{ hash, author, date, subject }]`
-- Parses the pipe-delimited rows; empty repo → empty array.
+- Command: `git log --pretty=format:%H%x1f%an%x1f%ad%x1f%s%x1e --date=short -n <count> [-- <path>]`
+- Returns: `{ commits: [{ hash, author, date, subject }], total }`
+- Parses NUL-delimited records (`\x1e` record sep, `\x1f` field sep); empty repo → empty
+  `commits` list (the specific "no commits yet" git error is handled and returned as `[]`).
 
 ### `git_commit`
 - Params: `cwd?`, `message` (required), `paths?` (string[]), `all?` (bool, default false)
