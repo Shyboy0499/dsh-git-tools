@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { makeRepo, cleanup, write, git } from './helpers'
+import { makeRepo, cleanup, write, git, commitAll } from './helpers'
 import { gitCommitTool } from '../src/tools/commit'
 
 const exec = { signal: new AbortController().signal } as never
@@ -9,7 +9,6 @@ describe('git_commit', () => {
     const dir = makeRepo()
     try {
       write(dir, 'a.txt', 'one\n')
-      git(dir, 'add', 'a.txt')
       write(dir, 'b.txt', 'x\n') // left untracked on purpose
       const value = (await gitCommitTool.execute({ cwd: dir, message: 'add a', paths: ['a.txt'] }, exec)) as any
       expect(value.success).toBe(true)
@@ -57,8 +56,3 @@ describe('git_commit', () => {
     }
   })
 })
-
-function commitAll(dir: string, message: string) {
-  git(dir, 'add', '-A')
-  git(dir, 'commit', '-m', message)
-}
