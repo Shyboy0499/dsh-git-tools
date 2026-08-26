@@ -19,21 +19,42 @@ describe('gitExec', () => {
     }
   })
 
-  it('throws GitError with git stderr on a bad command', async () => {
+  it('throws GitError carrying git stderr on a bad command', async () => {
     const dir = tempDir()
     try {
-      await expect(gitExec(dir, ['this-is-not-a-real-command'])).rejects.toBeInstanceOf(GitError)
+      await expect(gitExec(dir, ['this-is-not-a-real-command'])).rejects.toMatchObject({
+        name: 'GitError',
+        stderr: expect.stringContaining('is not a git command'),
+      })
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
   })
 
-  it('rejects when the signal is already aborted', async () => {
+  it('carries git exit code and stderr on a non-repo error', async () => {
+    const dir = tempDir() // not a git repository
+    try {
+      try {
+        await gitExec(dir, ['status'])
+        expect.fail('gitExec should have thrown')
+      } catch (err) {
+        expect(err).toBeInstanceOf(GitError)
+        const e = err as GitError
+        expect(e.exitCode).toBeTypeOf('number')
+        expect(e.stderr).toContain('not a git repository')
+        expect(e.message).toContain('not a git repository')
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects with AbortError (not GitError) when the signal is already aborted', async () => {
     const dir = tempDir()
     const controller = new AbortController()
     controller.abort()
     try {
-      await expect(gitExec(dir, ['status'], controller.signal)).rejects.toThrow()
+      await expect(gitExec(dir, ['status'], controller.signal)).rejects.toMatchObject({ name: 'AbortError' })
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
