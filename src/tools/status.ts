@@ -78,7 +78,7 @@ export const gitStatusTool = defineTool({
     render: (_args, value) => [{ type: 'text', text: formatStatus(value as GitStatusValue) }],
   },
   async execute(args, exec) {
-    const cwd = resolveCwd(args.cwd, exec as never)
+    const cwd = resolveCwd(args.cwd, exec)
     if (cwd === undefined) throw new Error('No working directory available; pass cwd explicitly.')
     const { stdout } = await gitExec(cwd, ['status', '--short', '--branch'], exec.signal)
     return parseStatus(stdout)
