@@ -32,7 +32,7 @@ export const gitCommitTool = defineTool({
       {
         type: 'text',
         text: value.success
-          ? `Committed ${value.hash} on ${value.branch} (${value.filesStaged} file(s) staged).`
+          ? `Committed ${value.hash} on ${value.branch ?? 'detached HEAD'} (${value.filesStaged} file(s) staged).`
           : 'Commit failed.',
       },
     ],

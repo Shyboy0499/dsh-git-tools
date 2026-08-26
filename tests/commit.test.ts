@@ -55,4 +55,37 @@ describe('git_commit', () => {
       cleanup(dir)
     }
   })
+
+  it('commits already-staged changes when neither paths nor all is given', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'one\n')
+      commitAll(dir, 'initial')
+      write(dir, 'a.txt', 'one\ntwo\n')
+      git(dir, 'add', 'a.txt')
+      write(dir, 'b.txt', 'untracked\n')
+      const value = (await gitCommitTool.execute({ cwd: dir, message: 'stage one' }, exec)) as any
+      expect(value.success).toBe(true)
+      expect(value.filesStaged).toBe(1)
+      expect(git(dir, 'status', '--short').trim()).toBe('?? b.txt')
+    } finally {
+      cleanup(dir)
+    }
+  })
+
+  it('reports a null branch on a detached HEAD', async () => {
+    const dir = makeRepo()
+    try {
+      write(dir, 'a.txt', 'one\n')
+      commitAll(dir, 'initial')
+      git(dir, 'checkout', '--detach')
+      write(dir, 'b.txt', 'x\n')
+      git(dir, 'add', 'b.txt')
+      const value = (await gitCommitTool.execute({ cwd: dir, message: 'detached' }, exec)) as any
+      expect(value.success).toBe(true)
+      expect(value.branch).toBeNull()
+    } finally {
+      cleanup(dir)
+    }
+  })
 })
