@@ -26,13 +26,7 @@ official tool API. No UI, Host-side only.
 dsh plugin --profile web add dsh-git-tools
 ```
 
-Requires `git` on your `PATH` (present in any development environment). The plugin is
-published on [npm](https://www.npmjs.com/package/dsh-git-tools) and installs from the
-registry once published.
-
-## Screenshots
-
-<!-- Screenshots land here once provided. Storefronts read assets/screenshots/. -->
+Requires `git` on your `PATH` (present in any development environment).
 
 ## Tool reference
 
