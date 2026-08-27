@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { makeRepo, cleanup, write, git, commitAll } from "./helpers";
+import { toolExec } from "./exec";
 import { gitCommitTool } from "../src/tools/commit";
 
-const exec = { signal: new AbortController().signal } as never;
+const exec = toolExec();
 
 describe("git_commit", () => {
   it("commits staged changes when paths are given", async () => {

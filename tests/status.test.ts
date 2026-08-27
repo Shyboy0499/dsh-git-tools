@@ -3,9 +3,10 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { makeRepo, cleanup, write, commitAll, git } from "./helpers";
+import { toolExec } from "./exec";
 import { gitStatusTool } from "../src/tools/status";
 
-const exec = { signal: new AbortController().signal } as never;
+const exec = toolExec();
 
 describe("git_status", () => {
   it("reports a clean repo on main", async () => {
@@ -98,6 +99,18 @@ describe("git_status", () => {
       expect(value.behind).toBe(0);
     } finally {
       rmSync(remote, { recursive: true, force: true });
+      cleanup(dir);
+    }
+  });
+
+  it("defaults cwd to the session workspace", async () => {
+    const dir = makeRepo();
+    try {
+      write(dir, "a.txt", "hello\n");
+      commitAll(dir, "initial");
+      const value = (await gitStatusTool.execute({}, toolExec(dir))) as any;
+      expect(value.branch).toBe("main");
+    } finally {
       cleanup(dir);
     }
   });

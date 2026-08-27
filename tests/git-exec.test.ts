@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { toolExec } from "./exec";
 import { gitExec, GitError, resolveCwd } from "../src/git-exec";
 
 function tempDir(): string {
@@ -71,18 +72,15 @@ describe("gitExec", () => {
 
 describe("resolveCwd", () => {
   it("falls back to the session workspace when no cwd is given", () => {
-    const exec = { agent: { session: { header: { cwd: "/tmp/session-root" } } } };
-    expect(resolveCwd(undefined, exec as never)).toBe("/tmp/session-root");
+    expect(resolveCwd(undefined, toolExec("/tmp/session-root"))).toBe("/tmp/session-root");
   });
 
   it("resolves a relative cwd against the session workspace", () => {
-    const exec = { agent: { session: { header: { cwd: "/tmp/session-root" } } } };
-    expect(resolveCwd("subdir", exec as never)).toBe("/tmp/session-root/subdir");
+    expect(resolveCwd("subdir", toolExec("/tmp/session-root"))).toBe("/tmp/session-root/subdir");
   });
 
   it("returns an absolute cwd untouched", () => {
-    const exec = { agent: { session: { header: { cwd: "/tmp/session-root" } } } };
-    expect(resolveCwd("/abs/path", exec as never)).toBe("/abs/path");
+    expect(resolveCwd("/abs/path", toolExec("/tmp/session-root"))).toBe("/abs/path");
   });
 
   it("returns undefined when neither cwd nor session is available", () => {

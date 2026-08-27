@@ -2,9 +2,10 @@ import { describe, it, expect } from "vitest";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { makeRepo, cleanup, write, commitAll, git } from "./helpers";
+import { toolExec } from "./exec";
 import { gitDiffTool } from "../src/tools/diff";
 
-const exec = { signal: new AbortController().signal } as never;
+const exec = toolExec();
 
 describe("git_diff", () => {
   it("returns an empty stat on a clean repo", async () => {

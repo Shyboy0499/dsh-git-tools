@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { makeRepo, cleanup, write, commitAll } from "./helpers";
+import { toolExec } from "./exec";
 import { gitLogTool } from "../src/tools/log";
 
-const exec = { signal: new AbortController().signal } as never;
+const exec = toolExec();
 
 describe("git_log", () => {
   it("returns commits newest-first with hash, author, date, subject", async () => {
