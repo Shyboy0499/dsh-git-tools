@@ -1,5 +1,9 @@
 # dsh-git-tools
 
+![npm version](https://img.shields.io/npm/v/dsh-git-tools)
+![CI](https://github.com/Shyboy0499/dsh-git-tools/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/npm/l/dsh-git-tools)
+
 > Local git tools for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`).
 
 `dsh-git-tools` is a dependency-free DeepSeek Harness plugin that gives the coding agent
@@ -22,7 +26,13 @@ official tool API. No UI, Host-side only.
 dsh plugin --profile web add dsh-git-tools
 ```
 
-Requires `git` on your `PATH` (present in any development environment).
+Requires `git` on your `PATH` (present in any development environment). The plugin is
+published on [npm](https://www.npmjs.com/package/dsh-git-tools) and installs from the
+registry once published.
+
+## Screenshots
+
+<!-- Screenshots land here once provided. Storefronts read assets/screenshots/. -->
 
 ## Tool reference
 
@@ -100,8 +110,10 @@ or everything with `all: true`. Never stages implicitly.
 
 ```sh
 pnpm install
-pnpm run build     # tsdown → lib/
-pnpm test          # vitest against real throwaway git repos
+pnpm run build        # tsdown → lib/
+pnpm test             # vitest against real throwaway git repos
+pnpm run lint         # oxlint
+pnpm run format       # prettier --write .
 ```
 
 ## License
